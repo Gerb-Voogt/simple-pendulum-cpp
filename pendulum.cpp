@@ -24,7 +24,7 @@ public:
 		this->data = nullptr;
 	}
 
-	Vector(const int n) {
+	Vector(int n) {
 		this->length = n;
 		this->data = new T[n];
 
@@ -40,7 +40,8 @@ public:
 		std::uninitialized_copy(init_lst.begin(), init_lst.end(), this->data);
 	}
 
-	Vector(Vector<T>& other) {
+	template<typename U>
+	Vector(Vector<U>& other) {
 		this->length = other.length;
 		this->data = new T[this->length];
 		for (int i = 0; i < other.length; i++) {
@@ -61,7 +62,7 @@ public:
 			throw std::invalid_argument("Length Error: Vectors must be of equal length.");
 		}
 
-		Vector<std::common_type_t<T, V>> return_vector(2);
+		Vector<std::common_type_t<T, V>> return_vector = Vector<std::common_type_t<T, V>>(2);
 		for (int i = 0; i < this->length; i++) {
 			return_vector[i] = this->data[i] + other.data[i];
 		}
@@ -101,6 +102,7 @@ private:
 	T mass;
 	T length;
 	T I;
+	double g;
 
 public:
 	Pendulum(const T mass, const T length, const double g = 9.81) {
@@ -111,14 +113,14 @@ public:
 		this->g = g;
 	}
 
-	Pendulum(const T mass, const T length, const T mu): Pendulum(mass, length) {
+	Pendulum(const T mass, const T length, const T mu, const double g = 9.81): Pendulum(mass, length) {
 		this->mu = mu;
 	}
 
 	~Pendulum() { }
 
 	// Methods
-	Vector<double> equation_of_motion(const Vector<double> state) const {
+	Vector<double> equation_of_motion(const Vector<double>& state) const {
 		/**
 		 * state is a Vector of 2 for which
 		 * state[0] = θ
@@ -163,8 +165,8 @@ public:
 	Solver(const double t0, const double tf, const double h) {
 		this->t0 = t0;
 		this->tf = tf;
-		this->h = h;
 		this->N = (int)((tf - t0)/h);
+		this->h = h;
 	}
 	Solver(const double t0, const double tf, const int N) {
 		this->t0 = t0;
