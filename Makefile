@@ -1,7 +1,7 @@
 TARGET=pendulum
 
 CXX=g++
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 
 all: $(TARGET).out
 
@@ -9,4 +9,4 @@ all: $(TARGET).out
 	$(CXX) $(CFLAGS) $< -o $@
 
 clean:
-	rm $(TARGET).out
+	rm $(TARGET).out *.log
