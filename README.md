@@ -4,11 +4,12 @@ This document involves a simple model of a pendulum programmed in C++. The main 
 ## The Mathetmatical Derivation
 Starting with a simple FBD we find that the sum of all the moments acting on the origin of the pendulum are given as
 
-$\Circlearrowleft \sum M = -lmg \sin(\theta) + lF_{a} = I \ddot{\theta}.$
+$\sum M = -lmg \sin(\theta) + lF_{a} = I \ddot{\theta}.$
 
 Assuming the air resistance force $F_{a}$ can be modeled as being proportional to velocity (Middle of the road assumption, in practice it is proportional to the velocity squared but this is simpler to model) we can write the following homogeneous nonlinear second order differential equation
 
 $\ddot{\theta} - \frac{\mu}{ml}\dot{\theta} - \frac{g}{l}\sin(\theta)$
+
 written in terms of a state-space model we end up with the following 2 equations
 
 $\dot{\theta} = \dot{\theta}$
