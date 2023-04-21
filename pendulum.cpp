@@ -72,25 +72,42 @@ public:
 	T& operator[](const int index) const {
 		return this->data[index];
 	}
+
+	Vector<T>& operator=(const Vector<T>& other) {
+		if (this == &other) {
+			return *this;
+		}
+
+		delete[] this->data;
+		this->length = other.len();
+
+		for (int i = 0; i < other.len(); i++) {
+			this->data[i] = other[i];
+		}
+		return *this;
+	}
+
+	// Getters and Setters
+	int len() const {
+		return this->length;
+	}
 };
 
 template<typename U, typename T>
 Vector<std::common_type_t<T, U>> operator*(const Vector<T>& vector, const U scalar) {
 	Vector<std::common_type_t<T, U>> return_vector(vector.length);
 	for (int i = 0; i < return_vector.length; i++) {
-		return_vector.data[i] = vector.data[i]*scalar;
+		return_vector[i] = vector[i]*scalar;
 	}
-
 	return return_vector;
 }
 
 template<typename U, typename T>
 Vector<std::common_type_t<T, U>> operator*(const U scalar, const Vector<T>& vector) {
-	Vector<std::common_type_t<T, U>> return_vector(vector.length);
-	for (int i = 0; i < return_vector.length; i++) {
-		return_vector.data[i] = vector.data[i]*scalar;
+	Vector<std::common_type_t<T, U>> return_vector(vector.len());
+	for (int i = 0; i < return_vector.len(); i++) {
+		return_vector[i] = vector[i]*scalar;
 	}
-
 	return return_vector;
 }
 
