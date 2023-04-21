@@ -152,8 +152,13 @@ public:
 		*/
 		const double theta = state[0];
 		const double theta_dot = state[1];
-
-		const double theta_ddot = this->mu/(this->m*this->length)*theta_dot - (this->g/this->length)*std::sin(theta);
+		std::cout << "Recieved the following state vector :" << std::endl;
+		std::cout << "theta = " << theta << ", dtheta/dt = " << theta_dot << std::endl;
+		std::cout << std::endl;
+		const double theta_ddot = this->mu/(this->mass*this->length)*theta_dot - (this->g/this->length)*std::sin(theta);
+		std::cout << "Returning the following state derivative" << std::endl;
+		std::cout << "dtheta/dt = " << theta_dot << ", d2theta/dt2 = " << theta_ddot << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
 
 		Vector<double> return_vector = {theta_dot, theta_ddot};
 		return return_vector;
@@ -194,17 +199,30 @@ public:
 
 	// Methods
 	template<typename T>
-	void forward_euler(Pendulum<T> pendulum,
+	void forward_euler(Pendulum<T>& pendulum,
 					const double theta0,
 					const double theta_dot0) const {
-		const Vector<double> initial_conditions({theta0, theta_dot0});
-		Vector<double> current_state(2);
-		Vector<double> new_state(2);
+		Vector<double> initial_conditions({theta0, theta_dot0});
 
-		for (int i = 0; i < N; i++) {
-			new_state = current_state + h*pendulum.equation_of_motion(current_state);
-			std::cout << "theta = " << new_state[0] << std::endl;
-			std::cout << "dtheta/dt = " << new_state[1] << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
+		std::cout << "Starting with the following initial conditions:" << std::endl;
+		std::cout << "theta = " << initial_conditions[0] << std::endl;
+		std::cout << "dtheta/dt = " << initial_conditions[1] << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
+
+		Vector<double> current_state = initial_conditions;
+
+		std::cout << "----------------------------------------------" << std::endl;
+		std::cout << "Solver Parameters" << std::endl;
+		std::cout << "step size = " << h << std::endl;
+		std::cout << "t0 = " << t0 << std::endl;
+		std::cout << "tf = " << tf << std::endl;
+		std::cout << "N = " << N << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
+
+		for (int i = 0; i < this->N; i++) {
+			Vector<double> new_state = current_state + this->h*pendulum.equation_of_motion(current_state);
+			current_state = new_state;
 		}
 	}
 
@@ -213,5 +231,10 @@ public:
 
 
 int main() {
+	Pendulum<double> pendulum = Pendulum<double>(1, 1);
+	Solver pendulum_solver = Solver(0.0, 1.0, 100);
 
+	const double theta0 = M_PI/4;
+	const double theta_dot0 = 1;
+	pendulum_solver.forward_euler(pendulum, theta0, theta_dot0);
 }
