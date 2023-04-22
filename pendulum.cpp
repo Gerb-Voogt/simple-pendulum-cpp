@@ -231,6 +231,7 @@ public:
 		this->N = (int)((tf - t0)/h);
 		this->h = h;
 	}
+
 	Solver(const double t0, const double tf, const int N) {
 		this->t0 = t0;
 		this->tf = tf;
@@ -239,18 +240,19 @@ public:
 	}
 
 	// Methods
+	// Can make this implementation more generic by replacing Pendulum<T>& pendulum with a 
+	// dynamical systems abstract base class. This method should be a base for dynamical systems such
+	// as a pendulum and have a purely virtual method for equations of motion.
 	template<typename T>
 	void forward_euler(Pendulum<T>& pendulum,
 					const double theta0,
 					const double theta_dot0) const {
+		// Setting up the file for writing the output data
+		std::ofstream data_file;
+		data_file.open("data_fe.csv");
+		data_file << "t,theta,theta_dot,theta_ddot,x,y\n";
+
 		Vector<double> initial_conditions({theta0, theta_dot0});
-
-		std::cout << "-----------------------------------------------" << std::endl;
-		std::cout << "Starting with the following initial conditions:" << std::endl;
-		std::cout << "theta = " << initial_conditions[0] << std::endl;
-		std::cout << "dtheta/dt = " << initial_conditions[1] << std::endl;
-		std::cout << "-----------------------------------------------" << std::endl;
-
 		Vector<double> current_state = initial_conditions;
 
 		std::cout << "----------------------------------------------" << std::endl;
@@ -260,11 +262,28 @@ public:
 		std::cout << "tf = " << tf << std::endl;
 		std::cout << "N = " << N << std::endl;
 		std::cout << "-----------------------------------------------" << std::endl;
+		std::cout << "Starting with the following initial conditions:" << std::endl;
+		std::cout << "theta = " << initial_conditions[0] << std::endl;
+		std::cout << "dtheta/dt = " << initial_conditions[1] << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
 
 		for (int i = 0; i < this->N; i++) {
-			Vector<double> new_state = current_state + this->h*pendulum.equation_of_motion(current_state);
+			Vector<double> state_derivative = pendulum.equation_of_motion(current_state);
+			Vector<double> new_state = current_state + this->h*state_derivative;
+			Vector<double> xy_position = pendulum.convert_to_xy(new_state);
+
+			data_file << i*this->h << ","
+					<< new_state[0] << ","
+					<< new_state[1] << ","
+					<< state_derivative[1] << ","
+					<< xy_position[0] << ","
+					<< xy_position[1] << std::endl;
+
 			current_state = new_state;
 		}
+
+		// Closing the file handle
+		data_file.close();
 	}
 
 	void rk4() const { }
@@ -272,8 +291,9 @@ public:
 
 
 int main() {
-	Pendulum<double> pendulum = Pendulum<double>(1, 1);
-	Solver pendulum_solver = Solver(0.0, 10.0, 100);
+	Pendulum<double> pendulum = Pendulum<double>(1.0, 1.0, 0.3);
+	pendulum.info();
+	Solver pendulum_solver = Solver(0.0, 10.0, 1000000);
 
 	const double theta0 = M_PI/4;
 	const double theta_dot0 = 1;
