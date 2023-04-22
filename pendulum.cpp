@@ -151,15 +151,15 @@ private:
 	double g;
 
 public:
-	Pendulum(const T mass, const T length, const double g = 9.81) {
+	Pendulum(const T mass, const T length) {
 		this->mu = 0;
 		this->mass = mass;
 		this->length = length;
 		this->I = mass*length*length;
-		this->g = g;
+		this->g = 9.81;
 	}
 
-	Pendulum(const T mass, const T length, const T mu, const double g = 9.81): Pendulum(mass, length) {
+	Pendulum(const T mass, const T length, const T mu): Pendulum(mass, length) {
 		this->mu = mu;
 	}
 
@@ -181,13 +181,7 @@ public:
 		*/
 		const double theta = state[0];
 		const double theta_dot = state[1];
-		std::cout << "Recieved the following state vector :" << std::endl;
-		std::cout << "theta = " << theta << ", dtheta/dt = " << theta_dot << std::endl;
-		std::cout << std::endl;
-		const double theta_ddot = this->mu/(this->mass*this->length)*theta_dot - (this->g/this->length)*std::sin(theta);
-		std::cout << "Returning the following state derivative" << std::endl;
-		std::cout << "dtheta/dt = " << theta_dot << ", d2theta/dt2 = " << theta_ddot << std::endl;
-		std::cout << "-----------------------------------------------" << std::endl;
+		const double theta_ddot = -this->mu/(this->mass*this->length)*theta_dot - (this->g/this->length)*std::sin(theta);
 
 		Vector<double> return_vector = {theta_dot, theta_ddot};
 		return return_vector;
