@@ -191,9 +191,27 @@ public:
 		const double theta = state[0];
 		const double x = this->length*std::sin(theta);
 		const double y = this->length*std::cos(theta);
-
 		Vector<double> return_vector = {x, y};
+
 		return return_vector;
+	}
+
+	Vector<double> convert_to_xy(const double theta) {
+		const double x = this->length*std::sin(theta);
+		const double y = this->length*std::cos(theta);
+		Vector<double> return_vector = {x, y};
+
+		return return_vector;
+	}
+
+	void info() const {
+		std::cout << "----------------------------------------------" << std::endl;
+		std::cout << "Info on the Pendulum being simulated" << std::endl;
+		std::cout << "----------------------------------------------" << std::endl;
+		std::cout << "μ = " << this->mu << std::endl;
+		std::cout << "m = " << this->mass << std::endl;
+		std::cout << "l = " << this->length << std::endl;
+		std::cout << "I = " << this->I << std::endl << std::endl;
 	}
 };
 
