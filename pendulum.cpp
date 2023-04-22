@@ -1,14 +1,12 @@
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <exception>
 #include <stdexcept>
+#include <type_traits>
 #include <initializer_list>
 #include <memory>
-
-#include <math.h>
-#include <stdexcept>
-#include <type_traits>
 
 
 template<typename T>
@@ -40,10 +38,19 @@ public:
 		std::uninitialized_copy(init_lst.begin(), init_lst.end(), this->data);
 	}
 
-	template<typename U>
-	Vector(Vector<U>& other) {
+	Vector(const Vector& other) {
 		this->length = other.length;
 		this->data = new T[this->length];
+
+		for (int i = 0; i < other.length; i++) {
+			this->data[i] = other.data[i];
+		}
+	}
+
+	Vector(Vector&& other) {
+		this->length = other.len();
+		this->data = new T[this->length];
+
 		for (int i = 0; i < other.length; i++) {
 			this->data[i] = other.data[i];
 		}
@@ -73,17 +80,39 @@ public:
 		return this->data[index];
 	}
 
-	Vector<T>& operator=(const Vector<T>& other) {
+	Vector& operator=(const Vector& other) {
 		if (this == &other) {
 			return *this;
 		}
 
 		delete[] this->data;
 		this->length = other.len();
+		this->data = new T[this->length];
 
 		for (int i = 0; i < other.len(); i++) {
 			this->data[i] = other[i];
 		}
+		return *this;
+	}
+
+	Vector& operator=(Vector&& other) {
+		if (this == &other) {
+			return *this;
+		}
+
+		delete[] this->data;
+		this->length = 0;
+
+		this->length = other.len();
+		this->data = new T[other.len()];
+		for (int i = 0; i < other.len(); i++) {
+			this->data[i] = other[i];
+		}
+
+		delete[] other.data;
+		other.data = nullptr;
+		other.length = 0;
+
 		return *this;
 	}
 
@@ -232,7 +261,7 @@ public:
 
 int main() {
 	Pendulum<double> pendulum = Pendulum<double>(1, 1);
-	Solver pendulum_solver = Solver(0.0, 1.0, 100);
+	Solver pendulum_solver = Solver(0.0, 10.0, 100);
 
 	const double theta0 = M_PI/4;
 	const double theta_dot0 = 1;
