@@ -124,8 +124,8 @@ public:
 
 template<typename U, typename T>
 Vector<std::common_type_t<T, U>> operator*(const Vector<T>& vector, const U scalar) {
-	Vector<std::common_type_t<T, U>> return_vector(vector.length);
-	for (int i = 0; i < return_vector.length; i++) {
+	Vector<std::common_type_t<T, U>> return_vector(vector.len());
+	for (int i = 0; i < return_vector.len(); i++) {
 		return_vector[i] = vector[i]*scalar;
 	}
 	return return_vector;
@@ -138,6 +138,20 @@ Vector<std::common_type_t<T, U>> operator*(const U scalar, const Vector<T>& vect
 		return_vector[i] = vector[i]*scalar;
 	}
 	return return_vector;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const Vector<T>& vector) {
+	os << "<";
+	for (int i = 0; i < vector.len(); i++) {
+		os << vector[i];
+		if (i == vector.len() - 1) {
+			os << ">";
+		} else {
+			os << ",";
+		}
+	}
+	return os;
 }
 
 
