@@ -25,7 +25,7 @@ $\dot x = f(x, t)$
 
 where $x \in \mathbb{R}^{n}$ and $f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$ is a vector valued function.
 
-## Numerical Methods to implement
+## Numerical Integration Schemes that are implemented
 ### Forward Euler
 First and foremost the obvious choice for a numerical scheme is the forward Euler integration scheme. It's the most simple numerical scheme to implement, generally has good stability and is fast to compute. On the flip side it has mediocre accuracy compared to more sophisticated options.
 
