@@ -266,8 +266,7 @@ public:
 		data_file.open("data_fe.csv");
 		data_file << "t,theta,theta_dot,x,y\n";
 
-		Vector<double> initial_conditions({theta0, theta_dot0});
-		Vector<double> current_state = initial_conditions;
+		Vector<double> initial_conditions({theta0, theta_dot0}); Vector<double> current_state = initial_conditions;
 
 		std::cout << "----------------------------------------------" << std::endl;
 		std::cout << "Solver Parameters" << std::endl;
@@ -300,19 +299,17 @@ public:
 	}
 
 	template<typename T>
-	void rk4(Pendulum<T> pendulum,
+	void modified_euler(Pendulum<T> pendulum,
 		  const double theta0,
 		  const double theta_dot0) const {
 		// Setting up the file for writing the output data
 		std::ofstream data_file;
-		data_file.open("data_rk4.csv");
+		data_file.open("data_me.csv");
 		data_file << "t,theta,theta_dot,x,y\n";
 
 
 		Vector<double> initial_conditions = {theta0, theta_dot0};
-		Vector<double> current_state = initial_conditions;
-		Vector<double> new_state;
-		Vector<double> w0, k1, k2, k3, k4;
+		Vector<double> w0 = initial_conditions;
 
 		std::cout << "----------------------------------------------" << std::endl;
 		std::cout << "Solver Parameters" << std::endl;
@@ -327,13 +324,8 @@ public:
 		std::cout << "-----------------------------------------------" << std::endl;
 
 		for (int i = 0; i < this->N; i++) {
-			w0 = current_state;
-			k1 = this->h*pendulum.equation_of_motion(current_state);
-			k2 = this->h*pendulum.equation_of_motion(current_state + 0.5*k1);
-			k3 = this->h*pendulum.equation_of_motion(current_state + 0.5*k2);
-			k4 = this->h*pendulum.equation_of_motion(current_state + k3);
-
-			new_state = current_state + 1/6*(k1 + 2*k2 + 2*k3 + k4);
+			Vector<double> predictor_state = w0 + this->h*pendulum.equation_of_motion(w0);
+			Vector<double> new_state = w0 + (1.0/2.0)*this->h*(pendulum.equation_of_motion(predictor_state) + pendulum.equation_of_motion(w0)); // = ...
 			Vector<double> xy_position = pendulum.convert_to_xy(new_state);
 
 			data_file << i*this->h << ","
@@ -342,7 +334,54 @@ public:
 					<< xy_position[0] << ","
 					<< xy_position[1] << std::endl;
 
-			current_state = new_state;
+			w0 = new_state;
+		}
+		
+		// Closing the file handle
+		data_file.close();
+	}
+
+	template<typename T>
+	void rk4(Pendulum<T> pendulum,
+		  const double theta0,
+		  const double theta_dot0) const {
+		// Setting up the file for writing the output data
+		std::ofstream data_file;
+		data_file.open("data_rk4.csv");
+		data_file << "t,theta,theta_dot,x,y\n";
+
+
+		Vector<double> initial_conditions = {theta0, theta_dot0};
+		Vector<double> w0 = initial_conditions;
+
+		std::cout << "----------------------------------------------" << std::endl;
+		std::cout << "Solver Parameters" << std::endl;
+		std::cout << "step size = " << h << std::endl;
+		std::cout << "t0 = " << t0 << std::endl;
+		std::cout << "tf = " << tf << std::endl;
+		std::cout << "N = " << N << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
+		std::cout << "Starting with the following initial conditions:" << std::endl;
+		std::cout << "theta = " << initial_conditions[0] << std::endl;
+		std::cout << "dtheta/dt = " << initial_conditions[1] << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
+
+		for (int i = 0; i < this->N; i++) {
+			Vector<double> k1 = pendulum.equation_of_motion(w0);
+			Vector<double> k2 = pendulum.equation_of_motion(w0 + this->h*0.5*k1);
+			Vector<double> k3 = pendulum.equation_of_motion(w0 + this->h*0.5*k2);
+			Vector<double> k4 = pendulum.equation_of_motion(w0 + this->h*k3);
+
+			Vector<double> new_state = w0 + (1.0/6.0)*this->h*(k1 + 2*k2 + 2*k3 + k4);
+			Vector<double> xy_position = pendulum.convert_to_xy(new_state);
+
+			data_file << i*this->h << ","
+					<< new_state[0] << ","
+					<< new_state[1] << ","
+					<< xy_position[0] << ","
+					<< xy_position[1] << std::endl;
+
+			w0 = new_state;
 		}
 		
 		// Closing the file handle
@@ -354,10 +393,11 @@ public:
 int main() {
 	Pendulum<double> pendulum = Pendulum<double>(1.0, 1.0, 0.3);
 	pendulum.info();
-	Solver pendulum_solver = Solver(0.0, 25.0, 1000000);
+	Solver pendulum_solver = Solver(0.0, 10.0, 1000);
 
 	const double theta0 = M_PI;
 	const double theta_dot0 = 10;
 	pendulum_solver.forward_euler(pendulum, theta0, theta_dot0);
+	pendulum_solver.modified_euler(pendulum, theta0, theta_dot0);
 	pendulum_solver.rk4(pendulum, theta0, theta_dot0);
 }
