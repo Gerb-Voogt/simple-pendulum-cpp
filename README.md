@@ -29,7 +29,7 @@ where $x \in \mathbb{R}^{n}$ and $f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$ 
 
 ## Numerical Integration Schemes that are implemented
 ### Forward Euler
-First and foremost the obvious choice for a numerical scheme is the forward Euler integration scheme. It's the most simple numerical scheme to implement, generally has good stability and is fast to compute. On the flip side it has mediocre accuracy compared to more sophisticated options.
+First and foremost the obvious choice for a numerical scheme is the forward Euler integration scheme. It's the most simple numerical scheme to implement. It generally has good stability and is fast to compute however it does not deal well with stiff systems and may require more sophisticated techniques such as adaptive step size to deal with these problems. The accuracy of Forward Euler is also poor compared to more sophisticated numerical methods.
 
 A simple derivation for the forward Euler scheme is given below. We start by noting that we can write the derivative as a first order finite difference scheme
 
@@ -46,7 +46,7 @@ $x(t+h) = x(t) + hf(x, t) +  \mathcal{O}(h^{2})$
 Which is the forward Euler finite difference scheme.
 
 ### Modified Euler
-A natural extension of the basics of Euler's method is the modified Euler method. This numerical method consists of a 2 step process: prediction and correction. We first start with a forward Euler step, generating a predictor for the next time step. This is then applied to the another forward Euler step which uses the predictor as input to generate the output. The idea here is that we first _underestimate_ the slope using
+A natural extension of the basics of Euler's method is the modified Euler method. This numerical method consists of a 2 step process: prediction and correction. We first start with a forward Euler step, generating a predictor for the next time step. This is then applied to the another forward Euler step which uses the predictor as input to generate the output. The idea is the use of both an overestimate and underestimate of the real solution and then taking the average of those 2. This naturally produces a result which is close to the exact solution then either of our bad approximations individually.
 
 $\alpha_{low} = f(t, x(t))$
 
@@ -70,7 +70,9 @@ which is the Modified Euler method.
 
 
 ### Runge-Kutta 4
-The Runge-kutta method follows from generalizing the notion of the prediction-correction scheme from the Modified Euler method. I will however refrain from writing down the complete derivation as this process is rather involved. The classic RK4 scheme is given using 4 predictors which are combined to find an approximation for our final result
+RK4 is one of the most widely applied explicit integration schemes. It's wide application is largely due to the fact that the method is very accurate while still remaining relatively cheap computationally speaking. The method is also relatively simple when compared to other higher order schemes, making it very easy to implement. It also boasts good stability over a wide range of step sizes. The main drawback of the method is that it does not deal well with stiff equations, requiring a very (potentially local if using adapative step size) small step size to produce accurate results.
+
+The Runge-kutta 4 method follows from generalizing the notion of the prediction-correction scheme from the Modified Euler method. I will however refrain from writing down the complete derivation as this process is rather involved. The classic RK4 scheme is given using 4 predictors which are combined to find an approximation for our final result
 
 $k_{1} = f(t, x(t))$
 
