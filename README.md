@@ -27,6 +27,49 @@ $\dot x = f(x, t)$
 
 where $x \in \mathbb{R}^{n}$ and $f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$ is a vector valued function.
 
+## Alternate Derivation using Lagrangian Mechanics
+Instead of using Newton's formalism we can also opt for using Lagrange's fromalism instead. This formalism provides a more mathematically rigorous framework for deriving equations of motion. The method involves finding the kinetic and potential energy of the system which we use combined with the Euler-Largange equations to yield the equations of motion.
+
+We start by defining the coordinates of the system in terms of the angle theta
+
+$x = l\sin(\theta) \quad y = l\cos(\theta)$
+
+We define the kinetic energy of the system
+
+$T = \frac{1}{2}m|\vec{v}|^2 = \frac{1}{2}m(\dot x^{2} + \dot y^{2})$
+
+which can be simplified to the following
+
+$T = \frac{1}{2}m\dot \theta^{2}.$
+
+We now define the potential as the height of the pendulum
+
+$V = mgy = mg l \cos(\theta)$
+
+The systems Lagrangian can now be written as
+
+$\mathcal{L} = T - V = \frac{1}{2}ml^{2}\dot\theta^{2} - mg l \sin(\theta).$
+
+In order to account for the air resistance we need to define the Rayleigh dissipation function
+
+$G = -\mu \dot \theta^{2}$
+
+The Euler-Largange equations for this system are given as
+
+$\frac{d }{d t}\left( \frac{\partial \mathcal{L}}{\partial \dot \theta} \right) = \frac{\partial \mathcal{L}}{\partial \theta} - \frac{\partial G}{\partial \dot \theta}$
+
+Using the Lagrangian we derived earlier this becomes
+
+$ml^{2} \ddot \theta = -mgl\sin(\theta) - \mu \dot\theta$
+
+which then finally becomes
+
+$ml^{2} \ddot \theta + mgl\sin(\theta) + \mu \dot\theta = 0$
+
+which is indeed the same differnetial equation as we found with Newton's formalism.
+
+
+
 ## Numerical Integration Schemes that are implemented
 ### Forward Euler
 First and foremost the obvious choice for a numerical scheme is the forward Euler integration scheme. It's the most simple numerical scheme to implement. It generally has good stability and is fast to compute however it does not deal well with stiff systems and may require more sophisticated techniques such as adaptive step size to deal with these problems. The accuracy of Forward Euler is also poor compared to more sophisticated numerical methods.
